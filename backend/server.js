@@ -9,9 +9,9 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); https://github.com/sawanyadav07/salon-management/compare/main...satge-common-module
 
-// DB Connection
+// DB Connection     git remote add origin https://github.com/yourusername/repository-name.git
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB Connected'))
   .catch(err => console.log('❌ DB Error:', err));
