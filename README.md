@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ✂️ SalonPro — MERN Salon Management System
 
 Complete salon management system built with MongoDB, Express, React, Node.js.
@@ -96,3 +97,6 @@ App opens at: **http://localhost:3000**
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB, Mongoose
 - **Auth:** JWT + bcryptjs
+=======
+# salon-management
+>>>>>>> 2706db2c7a3525a5847fbe3cde73f0e773daa41c
