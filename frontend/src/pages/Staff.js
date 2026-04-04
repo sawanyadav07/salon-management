@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/axios';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -16,7 +16,7 @@ export default function Staff() {
   const [loading, setLoading] = useState(false);
 
   const fetchStaff = async () => {
-    const res = await api.get('/api/staff/all');
+    const res = await axios.get('/api/staff/all');
     setStaff(res.data);
   };
   useEffect(() => { fetchStaff(); }, []);
@@ -44,8 +44,8 @@ export default function Staff() {
     e.preventDefault(); setLoading(true);
     const payload = { ...form, specialties: form.specialties.split(',').map(s => s.trim()).filter(Boolean) };
     try {
-      if (editId) { await api.put(`/api/staff/${editId}`, payload); toast.success('Staff updated!'); }
-      else { await api.post('/api/staff', payload); toast.success('Staff added!'); }
+      if (editId) { await axios.put(`/api/staff/${editId}`, payload); toast.success('Staff updated!'); }
+      else { await axios.post('/api/staff', payload); toast.success('Staff added!'); }
       setShowModal(false); fetchStaff();
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setLoading(false); }
@@ -53,7 +53,7 @@ export default function Staff() {
 
   const handleToggleActive = async (member) => {
     try {
-      await api.put(`/api/staff/${member._id}`, { isActive: !member.isActive });
+      await axios.put(`/api/staff/${member._id}`, { isActive: !member.isActive });
       toast.success(`Staff ${member.isActive ? 'deactivated' : 'activated'}!`);
       fetchStaff();
     } catch { toast.error('Failed'); }

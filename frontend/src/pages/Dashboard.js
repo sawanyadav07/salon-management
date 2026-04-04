@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/axios';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const statusBadge = (status) => {
@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/api/dashboard/stats')
+    axios.get('/api/dashboard/stats')
       .then(res => setStats(res.data))
       .catch(() => toast.error('Failed to load dashboard'))
       .finally(() => setLoading(false));
