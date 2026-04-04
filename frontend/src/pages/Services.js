@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-toastify';
 
 const emptyForm = { name: '', category: 'hair', price: '', duration: '', description: '' };
@@ -16,7 +16,7 @@ export default function Services() {
   const [loading, setLoading] = useState(false);
 
   const fetchServices = async () => {
-    const res = await axios.get('/api/services/all');
+    const res = await api.get('/api/services/all');
     setServices(res.data);
   };
   useEffect(() => { fetchServices(); }, []);
@@ -32,8 +32,8 @@ export default function Services() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true);
     try {
-      if (editId) { await axios.put(`/api/services/${editId}`, form); toast.success('Service updated!'); }
-      else { await axios.post('/api/services', form); toast.success('Service added!'); }
+      if (editId) { await api.put(`/api/services/${editId}`, form); toast.success('Service updated!'); }
+      else { await api.post('/api/services', form); toast.success('Service added!'); }
       setShowModal(false); fetchServices();
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setLoading(false); }
@@ -41,7 +41,7 @@ export default function Services() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Deactivate this service?')) return;
-    try { await axios.delete(`/api/services/${id}`); toast.success('Deactivated!'); fetchServices(); }
+    try { await api.delete(`/api/services/${id}`); toast.success('Deactivated!'); fetchServices(); }
     catch { toast.error('Failed'); }
   };
 

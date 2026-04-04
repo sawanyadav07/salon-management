@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-toastify';
 
 const emptyForm = { name: '', phone: '', email: '', gender: '', dob: '', address: '', notes: '' };
@@ -13,7 +13,7 @@ export default function Customers() {
   const [loading, setLoading] = useState(false);
 
   const fetchCustomers = async (q = '') => {
-    const res = await axios.get(`/api/customers${q ? `?search=${q}` : ''}`);
+    const res = await api.get(`/api/customers${q ? `?search=${q}` : ''}`);
     setCustomers(res.data);
   };
 
@@ -33,8 +33,8 @@ export default function Customers() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true);
     try {
-      if (editId) { await axios.put(`/api/customers/${editId}`, form); toast.success('Customer updated!'); }
-      else { await axios.post('/api/customers', form); toast.success('Customer added!'); }
+      if (editId) { await api.put(`/api/customers/${editId}`, form); toast.success('Customer updated!'); }
+      else { await api.post('/api/customers', form); toast.success('Customer added!'); }
       setShowModal(false); fetchCustomers(search);
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setLoading(false); }
@@ -42,7 +42,7 @@ export default function Customers() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this customer?')) return;
-    try { await axios.delete(`/api/customers/${id}`); toast.success('Deleted!'); fetchCustomers(search); }
+    try { await api.delete(`/api/customers/${id}`); toast.success('Deleted!'); fetchCustomers(search); }
     catch { toast.error('Delete failed'); }
   };
 

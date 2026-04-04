@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-toastify';
 
 const timeSlots = [];
@@ -40,16 +40,16 @@ export default function Appointments() {
     const params = new URLSearchParams();
     if (filterDate) params.append('date', filterDate);
     if (filterStatus) params.append('status', filterStatus);
-    const res = await axios.get(`/api/appointments?${params}`);
+    const res = await api.get(`/api/appointments?${params}`);
     setAppointments(res.data);
   };
 
   useEffect(() => { fetchAppointments(); }, [filterDate, filterStatus]);
 
   useEffect(() => {
-    axios.get('/api/customers').then(r => setCustomers(r.data));
-    axios.get('/api/staff').then(r => setStaffList(r.data));
-    axios.get('/api/services').then(r => setServicesList(r.data));
+    api.get('/api/customers').then(r => setCustomers(r.data));
+    api.get('/api/staff').then(r => setStaffList(r.data));
+    api.get('/api/services').then(r => setServicesList(r.data));
   }, []);
 
   const totalAmount = form.services.reduce((sum, sid) => {
@@ -92,8 +92,8 @@ export default function Appointments() {
     setLoading(true);
     const payload = { ...form, totalAmount, finalAmount };
     try {
-      if (editId) { await axios.put(`/api/appointments/${editId}`, payload); toast.success('Appointment updated!'); }
-      else { await axios.post('/api/appointments', payload); toast.success('Appointment booked!'); }
+      if (editId) { await api.put(`/api/appointments/${editId}`, payload); toast.success('Appointment updated!'); }
+      else { await api.post('/api/appointments', payload); toast.success('Appointment booked!'); }
       setShowModal(false); fetchAppointments();
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setLoading(false); }
@@ -101,12 +101,12 @@ export default function Appointments() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Cancel this appointment?')) return;
-    try { await axios.delete(`/api/appointments/${id}`); toast.success('Cancelled!'); fetchAppointments(); }
+    try { await api.delete(`/api/appointments/${id}`); toast.success('Cancelled!'); fetchAppointments(); }
     catch { toast.error('Failed'); }
   };
 
   const quickStatus = async (id, status) => {
-    try { await axios.put(`/api/appointments/${id}`, { status }); toast.success(`Marked as ${status}`); fetchAppointments(); }
+    try { await api.put(`/api/appointments/${id}`, { status }); toast.success(`Marked as ${status}`); fetchAppointments(); }
     catch { toast.error('Failed'); }
   };
 
