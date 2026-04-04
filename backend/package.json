@@ -1,7 +1,6 @@
 {
   "name": "salon-management-backend",
   "version": "1.0.0",
-  "description": "Salon Management System - Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
