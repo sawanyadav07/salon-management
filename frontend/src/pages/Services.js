@@ -26,7 +26,7 @@ export default function Services() {
   const openAdd = () => { setForm(emptyForm); setEditId(null); setShowModal(true); };
   const openEdit = (s) => {
     setForm({ name: s.name, category: s.category, price: s.price, duration: s.duration, description: s.description || '' });
-    setEditId(s._id); setShowModal(true);
+    setEditId(s.id); setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
@@ -78,7 +78,7 @@ export default function Services() {
         {filtered.length === 0 ? (
           <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#a0aec0', padding: '40px' }}>No services found</div>
         ) : filtered.map(svc => (
-          <div key={svc._id} className="card" style={{ opacity: svc.isActive ? 1 : 0.5 }}>
+          <div key={svc.id} className="card" style={{ opacity: svc.isActive ? 1 : 0.5 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <span style={{
                 padding: '3px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', textTransform: 'capitalize',
@@ -92,7 +92,7 @@ export default function Services() {
               <span style={{ fontSize: '13px', color: '#718096' }}>⏱ {svc.duration} mins</span>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => openEdit(svc)}>Edit</button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(svc._id)}>Remove</button>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(svc.id)}>Remove</button>
               </div>
             </div>
           </div>

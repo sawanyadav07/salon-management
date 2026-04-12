@@ -1,12 +1,16 @@
-const mongoose = require('mongoose');
+module.exports = (sequelize, DataTypes) => {
+  const Service = sequelize.define('Service', {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    name: { type: DataTypes.STRING, allowNull: false },
+    category: { type: DataTypes.ENUM('hair', 'skin', 'nails', 'makeup', 'spa', 'other'), allowNull: false },
+    price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+    duration: { type: DataTypes.INTEGER, allowNull: false }, // minutes
+    description: { type: DataTypes.TEXT },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true }
+  }, {
+    tableName: 'services',
+    timestamps: true
+  });
 
-const serviceSchema = new mongoose.Schema({
-  name:        { type: String, required: true },
-  category:    { type: String, enum: ['hair', 'skin', 'nails', 'makeup', 'spa', 'other'], required: true },
-  price:       { type: Number, required: true },
-  duration:    { type: Number, required: true }, // in minutes
-  description: { type: String },
-  isActive:    { type: Boolean, default: true }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Service', serviceSchema);
+  return Service;
+};

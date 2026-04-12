@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 
 const navItems = [
   { path: '/',            label: 'Dashboard',    icon: '📊' },
@@ -12,9 +13,18 @@ const navItems = [
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { notifications, unreadCount, markAllRead } = useNotifications();
   const navigate = useNavigate();
+  const [openNotif, setOpenNotif] = useState(false);
 
   const handleLogout = () => { logout(); navigate('/login'); };
+  const toggleNotif = () => {
+    setOpenNotif((o) => {
+      const next = !o;
+      if (!o) markAllRead();
+      return next;
+    });
+  };
 
   return (
     <div className="layout">
@@ -43,6 +53,33 @@ export default function Layout() {
         </div>
       </aside>
       <main className="main-content">
+        <div className="topbar">
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+            <button className="icon-btn" onClick={toggleNotif} aria-label="Notifications">
+              <span style={{ fontSize: '20px' }}>🔔</span>
+              {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
+            </button>
+            {openNotif && (
+              <div className="notif-panel">
+                <div className="notif-header">
+                  <span>Notifications</span>
+                  <button className="link-btn" onClick={markAllRead}>Mark all read</button>
+                </div>
+                {notifications.length === 0 ? (
+                  <div className="notif-empty">No notifications yet</div>
+                ) : (
+                  notifications.map((n) => (
+                    <div key={n.id} className="notif-item">
+                      <div className="notif-title">{n.title || 'Notification'}</div>
+                      <div className="notif-message">{n.message}</div>
+                      <div className="notif-meta">{new Date(n.at || Date.now()).toLocaleString()}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
         <Outlet />
       </main>
     </div>

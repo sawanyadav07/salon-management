@@ -27,7 +27,7 @@ export default function Customers() {
   const openAdd = () => { setForm(emptyForm); setEditId(null); setShowModal(true); };
   const openEdit = (c) => {
     setForm({ name: c.name, phone: c.phone, email: c.email || '', gender: c.gender || '', dob: c.dob ? c.dob.split('T')[0] : '', address: c.address || '', notes: c.notes || '' });
-    setEditId(c._id); setShowModal(true);
+    setEditId(c.id); setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
@@ -72,7 +72,7 @@ export default function Customers() {
               {customers.length === 0 ? (
                 <tr><td colSpan={7} style={{ textAlign: 'center', color: '#a0aec0', padding: '32px' }}>No customers found</td></tr>
               ) : customers.map(c => (
-                <tr key={c._id}>
+                <tr key={c.id}>
                   <td><strong>{c.name}</strong></td>
                   <td>{c.phone}</td>
                   <td>{c.email || '—'}</td>
@@ -81,7 +81,7 @@ export default function Customers() {
                   <td>₹{c.totalSpent.toLocaleString('en-IN')}</td>
                   <td>
                     <button className="btn btn-secondary btn-sm" onClick={() => openEdit(c)} style={{ marginRight: '6px' }}>Edit</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)}>Delete</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Delete</button>
                   </td>
                 </tr>
               ))}

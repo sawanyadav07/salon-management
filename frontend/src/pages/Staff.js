@@ -29,7 +29,7 @@ export default function Staff() {
       workingDays: s.workingDays || [],
       workingHours: s.workingHours || { start: '09:00', end: '18:00' }
     });
-    setEditId(s._id); setShowModal(true);
+    setEditId(s.id); setShowModal(true);
   };
 
   const toggleDay = (day) => {
@@ -53,7 +53,7 @@ export default function Staff() {
 
   const handleToggleActive = async (member) => {
     try {
-      await axios.put(`/api/staff/${member._id}`, { isActive: !member.isActive });
+      await axios.put(`/api/staff/${member.id}`, { isActive: !member.isActive });
       toast.success(`Staff ${member.isActive ? 'deactivated' : 'activated'}!`);
       fetchStaff();
     } catch { toast.error('Failed'); }
@@ -79,7 +79,7 @@ export default function Staff() {
         ) : staff.map((member, i) => {
           const ci = i % avatarColors.length;
           return (
-            <div key={member._id} className="card" style={{ opacity: member.isActive ? 1 : 0.6 }}>
+            <div key={member.id} className="card" style={{ opacity: member.isActive ? 1 : 0.6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
                 <div style={{
                   width: '50px', height: '50px', borderRadius: '50%',

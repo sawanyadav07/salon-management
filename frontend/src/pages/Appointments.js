@@ -24,6 +24,8 @@ const emptyForm = {
   status: 'scheduled', discount: 0, paymentStatus: 'pending', paymentMethod: '', notes: ''
 };
 
+const toNum = (v) => (v === '' || v === null || v === undefined ? null : Number(v));
+
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -53,8 +55,8 @@ export default function Appointments() {
   }, []);
 
   const totalAmount = form.services.reduce((sum, sid) => {
-    const svc = servicesList.find(s => s._id === sid);
-    return sum + (svc?.price || 0);
+    const svc = servicesList.find(s => s.id === sid || s.id === Number(sid));
+    return sum + (Number(svc?.price) || 0);
   }, 0);
   const finalAmount = totalAmount - (Number(form.discount) || 0);
 
@@ -65,9 +67,9 @@ export default function Appointments() {
 
   const openEdit = (appt) => {
     setForm({
-      customer: appt.customer?._id || '',
-      staff: appt.staff?._id || '',
-      services: appt.services?.map(s => s._id) || [],
+      customer: appt.customer?.id || '',
+      staff: appt.staff?.id || '',
+      services: appt.services?.map(s => s.id) || [],
       date: appt.date ? appt.date.split('T')[0] : '',
       timeSlot: appt.timeSlot || '',
       status: appt.status || 'scheduled',
@@ -76,7 +78,7 @@ export default function Appointments() {
       paymentMethod: appt.paymentMethod || '',
       notes: appt.notes || ''
     });
-    setEditId(appt._id); setShowModal(true);
+    setEditId(appt.id); setShowModal(true);
   };
 
   const toggleService = (sid) => {
@@ -90,7 +92,14 @@ export default function Appointments() {
     e.preventDefault();
     if (form.services.length === 0) { toast.error('Please select at least one service'); return; }
     setLoading(true);
-    const payload = { ...form, totalAmount, finalAmount };
+    const payload = {
+      ...form,
+      customer: toNum(form.customer),
+      staff: toNum(form.staff),
+      services: form.services.map(toNum),
+      totalAmount,
+      finalAmount
+    };
     try {
       if (editId) { await axios.put(`/api/appointments/${editId}`, payload); toast.success('Appointment updated!'); }
       else { await axios.post('/api/appointments', payload); toast.success('Appointment booked!'); }
@@ -143,7 +152,7 @@ export default function Appointments() {
               {appointments.length === 0 ? (
                 <tr><td colSpan={8} style={{ textAlign: 'center', color: '#a0aec0', padding: '32px' }}>No appointments found</td></tr>
               ) : appointments.map(appt => (
-                <tr key={appt._id}>
+                <tr key={appt.id}>
                   <td>
                     <strong>{appt.timeSlot}</strong>
                     <div style={{ fontSize: '12px', color: '#a0aec0' }}>{new Date(appt.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</div>
@@ -168,15 +177,15 @@ export default function Appointments() {
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                       <button className="btn btn-secondary btn-sm" onClick={() => openEdit(appt)}>Edit</button>
                       {appt.status === 'scheduled' && (
-                        <button className="btn btn-success btn-sm" onClick={() => quickStatus(appt._id, 'confirmed')}>Confirm</button>
+                        <button className="btn btn-success btn-sm" onClick={() => quickStatus(appt.id, 'confirmed')}>Confirm</button>
                       )}
                       {appt.status === 'confirmed' && (
-                        <button className="btn btn-sm" style={{ background: '#fefcbf', color: '#92400e' }} onClick={() => quickStatus(appt._id, 'in-progress')}>Start</button>
+                        <button className="btn btn-sm" style={{ background: '#fefcbf', color: '#92400e' }} onClick={() => quickStatus(appt.id, 'in-progress')}>Start</button>
                       )}
                       {appt.status === 'in-progress' && (
-                        <button className="btn btn-success btn-sm" onClick={() => quickStatus(appt._id, 'completed')}>Done</button>
+                        <button className="btn btn-success btn-sm" onClick={() => quickStatus(appt.id, 'completed')}>Done</button>
                       )}
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(appt._id)}>✕</button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(appt.id)}>✕</button>
                     </div>
                   </td>
                 </tr>
@@ -200,14 +209,14 @@ export default function Appointments() {
                   <label>Customer *</label>
                   <select required value={form.customer} onChange={e => setForm({ ...form, customer: e.target.value })}>
                     <option value="">Select customer</option>
-                    {customers.map(c => <option key={c._id} value={c._id}>{c.name} — {c.phone}</option>)}
+                    {customers.map(c => <option key={c.id} value={c.id}>{c.name} — {c.phone}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
                   <label>Staff Member *</label>
                   <select required value={form.staff} onChange={e => setForm({ ...form, staff: e.target.value })}>
                     <option value="">Select staff</option>
-                    {staffList.map(s => <option key={s._id} value={s._id}>{s.name} ({s.role})</option>)}
+                    {staffList.map(s => <option key={s.id} value={s.id}>{s.name} ({s.role})</option>)}
                   </select>
                 </div>
                 <div className="form-group">
@@ -227,8 +236,8 @@ export default function Appointments() {
                   <label>Services * (select one or more)</label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginTop: '6px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px' }}>
                     {servicesList.map(svc => (
-                      <label key={svc._id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '6px', borderRadius: '6px', background: form.services.includes(svc._id) ? '#fef3c7' : 'transparent', fontSize: '13px' }}>
-                        <input type="checkbox" checked={form.services.includes(svc._id)} onChange={() => toggleService(svc._id)} />
+                      <label key={svc.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', padding: '6px', borderRadius: '6px', background: form.services.includes(svc.id) ? '#fef3c7' : 'transparent', fontSize: '13px' }}>
+                        <input type="checkbox" checked={form.services.includes(svc.id)} onChange={() => toggleService(svc.id)} />
                         <span>{svc.name}</span>
                         <span style={{ marginLeft: 'auto', color: '#d97706', fontWeight: '600' }}>₹{svc.price}</span>
                       </label>

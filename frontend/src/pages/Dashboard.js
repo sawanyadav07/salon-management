@@ -67,7 +67,7 @@ export default function Dashboard() {
           {stats.recentAppointments.length === 0
             ? <p style={{ color: '#a0aec0', fontSize: '14px' }}>No appointments yet</p>
             : stats.recentAppointments.map(appt => (
-              <div key={appt._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
+              <div key={appt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
                 <div>
                   <div style={{ fontWeight: '500', fontSize: '14px' }}>{appt.customer?.name}</div>
                   <div style={{ fontSize: '12px', color: '#718096' }}>
@@ -88,7 +88,7 @@ export default function Dashboard() {
           {stats.topServices.length === 0
             ? <p style={{ color: '#a0aec0', fontSize: '14px' }}>No data yet</p>
             : stats.topServices.map((svc, i) => (
-              <div key={svc._id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
+              <div key={svc.id || i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
                 <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#e2b96f', color: '#1a202c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>
                   {i + 1}
                 </span>
