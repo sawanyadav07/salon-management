@@ -97,6 +97,7 @@ export default function Appointments() {
       customer: toNum(form.customer),
       staff: toNum(form.staff),
       services: form.services.map(toNum),
+      paymentMethod: form.paymentMethod ? form.paymentMethod.toLowerCase() : null,
       totalAmount,
       finalAmount
     };

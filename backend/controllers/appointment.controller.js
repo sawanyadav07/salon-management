@@ -14,6 +14,25 @@ const includeRelations = [
   { model: Service, as: 'services', attributes: ['id', 'name', 'price', 'duration'], through: { attributes: [] } }
 ];
 
+const PAYMENT_METHODS = new Set(['cash', 'card', 'upi', 'other']);
+
+const normalizeAppointmentPayload = (payload = {}, { forUpdate = false } = {}) => {
+  const normalized = { ...payload };
+
+  if (Object.prototype.hasOwnProperty.call(normalized, 'paymentMethod')) {
+    if (typeof normalized.paymentMethod === 'string') {
+      const method = normalized.paymentMethod.trim().toLowerCase();
+      normalized.paymentMethod = PAYMENT_METHODS.has(method) ? method : null;
+    } else if (!normalized.paymentMethod) {
+      normalized.paymentMethod = null;
+    }
+  } else if (!forUpdate) {
+    normalized.paymentMethod = null;
+  }
+
+  return normalized;
+};
+
 exports.getAppointments = async (req, res, next) => {
   try {
     const { date, status, staff } = req.query;
@@ -45,7 +64,8 @@ exports.getAppointment = async (req, res, next) => {
 
 exports.createAppointment = async (req, res, next) => {
   try {
-    const { services = [], ...payload } = req.body;
+    const { services = [], ...body } = req.body;
+    const payload = normalizeAppointmentPayload(body);
     const appt = await Appointment.create({
       ...payload,
       customerId: payload.customerId || payload.customer,
@@ -67,15 +87,16 @@ exports.createAppointment = async (req, res, next) => {
 
 exports.updateAppointment = async (req, res, next) => {
   try {
-    const { services } = req.body;
+    const { services, ...body } = req.body;
+    const payload = normalizeAppointmentPayload(body, { forUpdate: true });
     const appt = await Appointment.findByPk(req.params.id);
     if (!appt) return next(ApiError.notFound('Appointment not found'));
 
     const prevStatus = appt.status;
     await appt.update({
-      ...req.body,
-      customerId: req.body.customerId || req.body.customer || appt.customerId,
-      staffId: req.body.staffId || req.body.staff || appt.staffId
+      ...payload,
+      customerId: payload.customerId || payload.customer || appt.customerId,
+      staffId: payload.staffId || payload.staff || appt.staffId
     });
     if (services) await appt.setServices(services);
 
