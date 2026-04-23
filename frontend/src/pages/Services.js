@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 const emptyForm = { name: '', category: 'hair', price: '', duration: '', description: '' };
 const categories = ['hair', 'skin', 'nails', 'makeup', 'spa', 'other'];
@@ -35,7 +36,7 @@ export default function Services() {
       if (editId) { await axios.put(`/api/services/${editId}`, form); toast.success('Service updated!'); }
       else { await axios.post('/api/services', form); toast.success('Service added!'); }
       setShowModal(false); fetchServices();
-    } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+    } catch (err) { toast.error(getApiErrorMessage(err, 'Unable to save service.')); }
     finally { setLoading(false); }
   };
 

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const normalizePhone = (value) => value.replace(/\D/g, '').slice(0, 10);
 const emptyForm = {
   name: '', phone: '', email: '', role: '', salary: '',
   specialties: '', workingDays: [], workingHours: { start: '09:00', end: '18:00' }
@@ -47,7 +49,7 @@ export default function Staff() {
       if (editId) { await axios.put(`/api/staff/${editId}`, payload); toast.success('Staff updated!'); }
       else { await axios.post('/api/staff', payload); toast.success('Staff added!'); }
       setShowModal(false); fetchStaff();
-    } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+    } catch (err) { toast.error(getApiErrorMessage(err, 'Unable to save staff member.')); }
     finally { setLoading(false); }
   };
 
@@ -131,7 +133,16 @@ export default function Staff() {
                 </div>
                 <div className="form-group">
                   <label>Phone *</label>
-                  <input required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="9876543210" />
+                  <input
+                    required
+                    inputMode="numeric"
+                    maxLength={10}
+                    pattern="[0-9]{10}"
+                    title="Phone number must be 10 digits"
+                    value={form.phone}
+                    onChange={e => setForm({ ...form, phone: normalizePhone(e.target.value) })}
+                    placeholder="9876543210"
+                  />
                 </div>
                 <div className="form-group">
                   <label>Email</label>

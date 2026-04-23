@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 const timeSlots = [];
 for (let h = 9; h <= 20; h++) {
@@ -105,7 +106,7 @@ export default function Appointments() {
       if (editId) { await axios.put(`/api/appointments/${editId}`, payload); toast.success('Appointment updated!'); }
       else { await axios.post('/api/appointments', payload); toast.success('Appointment booked!'); }
       setShowModal(false); fetchAppointments();
-    } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+    } catch (err) { toast.error(getApiErrorMessage(err, 'Unable to save appointment.')); }
     finally { setLoading(false); }
   };
 
