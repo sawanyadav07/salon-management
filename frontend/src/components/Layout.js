@@ -4,11 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 
 const navItems = [
-  { path: '/',            label: 'Dashboard',    icon: '📊' },
-  { path: '/appointments',label: 'Appointments', icon: '📅' },
-  { path: '/customers',   label: 'Customers',    icon: '👥' },
-  { path: '/services',    label: 'Services',     icon: '✂️'  },
-  { path: '/staff',       label: 'Staff',        icon: '👤' },
+  { path: '/admin', label: 'Dashboard' },
+  { path: '/admin/appointments', label: 'Appointments' },
+  { path: '/admin/customers', label: 'Customers' },
+  { path: '/admin/services', label: 'Services' },
+  { path: '/admin/staff', label: 'Staff' }
 ];
 
 export default function Layout() {
@@ -17,36 +17,39 @@ export default function Layout() {
   const navigate = useNavigate();
   const [openNotif, setOpenNotif] = useState(false);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => {
+    logout();
+    navigate('/admin/login');
+  };
+
   const toggleNotif = () => {
-    setOpenNotif((o) => {
-      const next = !o;
-      if (!o) markAllRead();
-      return next;
+    setOpenNotif((open) => {
+      const nextOpen = !open;
+      if (nextOpen) markAllRead();
+      return nextOpen;
     });
   };
 
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="sidebar-logo">
-          <span>✂️</span> SalonPro
-        </div>
+        <div className="sidebar-logo">SalonPro</div>
         <nav className="sidebar-nav">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/'}
+              end={item.path === '/admin'}
               className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             >
-              <span>{item.icon}</span> {item.label}
+              {item.label}
             </NavLink>
           ))}
         </nav>
         <div className="sidebar-footer">
           <div className="user-info">
-            👤 {user?.name}<br />
+            {user?.name}
+            <br />
             <small style={{ color: '#718096', textTransform: 'capitalize' }}>{user?.role}</small>
           </div>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
@@ -56,7 +59,7 @@ export default function Layout() {
         <div className="topbar">
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
             <button className="icon-btn" onClick={toggleNotif} aria-label="Notifications">
-              <span style={{ fontSize: '20px' }}>🔔</span>
+              <span style={{ fontSize: '20px' }}>{String.fromCodePoint(128276)}</span>
               {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
             </button>
             {openNotif && (
@@ -68,11 +71,11 @@ export default function Layout() {
                 {notifications.length === 0 ? (
                   <div className="notif-empty">No notifications yet</div>
                 ) : (
-                  notifications.map((n) => (
-                    <div key={n.id} className="notif-item">
-                      <div className="notif-title">{n.title || 'Notification'}</div>
-                      <div className="notif-message">{n.message}</div>
-                      <div className="notif-meta">{new Date(n.at || Date.now()).toLocaleString()}</div>
+                  notifications.map((item) => (
+                    <div key={item.id} className="notif-item">
+                      <div className="notif-title">{item.title || 'Notification'}</div>
+                      <div className="notif-message">{item.message}</div>
+                      <div className="notif-meta">{new Date(item.at || Date.now()).toLocaleString()}</div>
                     </div>
                   ))
                 )}

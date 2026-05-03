@@ -3,6 +3,7 @@ const { sequelize } = require('../config/db');
 
 const User = require('./User')(sequelize, DataTypes);
 const Customer = require('./Customer')(sequelize, DataTypes);
+const CustomerAccount = require('./CustomerAccount')(sequelize, DataTypes);
 const Service = require('./Service')(sequelize, DataTypes);
 const Staff = require('./Staff')(sequelize, DataTypes);
 const Appointment = require('./Appointment')(sequelize, DataTypes);
@@ -11,6 +12,8 @@ const AppointmentService = require('./AppointmentService')(sequelize, DataTypes)
 // Associations
 Customer.hasMany(Appointment, { foreignKey: 'customerId', as: 'appointments', onDelete: 'CASCADE' });
 Appointment.belongsTo(Customer, { foreignKey: 'customerId', as: 'customer', onDelete: 'CASCADE' });
+Customer.hasOne(CustomerAccount, { foreignKey: 'customerId', as: 'account', onDelete: 'CASCADE' });
+CustomerAccount.belongsTo(Customer, { foreignKey: 'customerId', as: 'customer', onDelete: 'CASCADE' });
 
 Staff.hasMany(Appointment, { foreignKey: 'staffId', as: 'appointments', onDelete: 'CASCADE' });
 Appointment.belongsTo(Staff, { foreignKey: 'staffId', as: 'staff', onDelete: 'CASCADE' });
@@ -38,6 +41,7 @@ module.exports = {
   sequelize,
   User,
   Customer,
+  CustomerAccount,
   Service,
   Staff,
   Appointment,

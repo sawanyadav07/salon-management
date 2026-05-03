@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage';
@@ -7,16 +7,16 @@ import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { loginStaff } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setLoading(true);
     try {
-      await login(form.email, form.password);
-      toast.success('Welcome back!');
-      navigate('/');
+      await loginStaff(form.email, form.password);
+      toast.success('Welcome back');
+      navigate('/admin');
     } catch (err) {
       toast.error(getApiErrorMessage(err, 'Login failed'));
     } finally {
@@ -28,33 +28,36 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <div className="scissor">✂️</div>
           <h1>SalonPro</h1>
-          <p>Salon Management System</p>
+          <p>Admin Portal</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email Address</label>
             <input
-              type="email" required placeholder="admin@salon.com"
+              type="email"
+              required
+              placeholder="admin@salon.com"
               value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
+              onChange={(event) => setForm({ ...form, email: event.target.value })}
             />
           </div>
           <div className="form-group">
             <label>Password</label>
             <input
-              type="password" required placeholder="••••••••"
+              type="password"
+              required
+              placeholder="Enter password"
               value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
+              onChange={(event) => setForm({ ...form, password: event.target.value })}
             />
           </div>
-          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '8px', padding: '12px' }} disabled={loading}>
+          <button className="btn btn-primary customer-auth-submit" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#a0aec0' }}>
-          Demo: admin@salon.com / admin123
+        <p className="customer-auth-footer">
+          New customer? <Link to="/customer/auth">Go to customer sign in</Link>
         </p>
       </div>
     </div>
