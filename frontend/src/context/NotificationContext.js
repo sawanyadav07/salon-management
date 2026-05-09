@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
+import { socketURL } from '../config/api';
 
 const NotificationContext = createContext();
 
@@ -8,7 +9,7 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const socket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000', {
+    const socket = io(socketURL, {
       transports: ['websocket', 'polling']
     });
 

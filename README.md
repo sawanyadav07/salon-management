@@ -1,67 +1,74 @@
-<<<<<<< HEAD
-# ✂️ SalonPro — MERN Salon Management System
+# Salon Management
 
-Complete salon management system built with MongoDB, Express, React, Node.js.
-
-## Features
-
-- **Dashboard** — Revenue stats, today's appointments, top services
-- **Appointments** — Book, confirm, track & complete appointments with payment tracking
-- **Customers** — Full customer profiles with visit history & spending
-- **Services** — Manage services by category (Hair, Skin, Nails, Makeup, Spa)
-- **Staff** — Staff profiles with specialties, working days & hours
-- **Auth** — JWT-based login with role support (admin/receptionist)
+Salon management system with:
+- Backend: Node.js, Express, Sequelize, MySQL, JWT, Socket.IO
+- Frontend: React (CRA), Axios, React Router, React Toastify, Socket.IO client
 
 ## Project Structure
 
-```
+```text
 salon-management/
-├── backend/
-│   ├── models/         # Mongoose models (User, Customer, Service, Staff, Appointment)
-│   ├── routes/         # Express routes
-│   ├── middleware/     # JWT auth middleware
-│   ├── server.js       # Entry point
-│   ├── seed.js         # Demo data seeder
-│   └── .env
-└── frontend/
-    └── src/
-        ├── pages/      # Dashboard, Appointments, Customers, Services, Staff, Login
-        ├── components/ # Layout (sidebar)
-        └── context/    # AuthContext
+|-- backend/
+|   |-- config/
+|   |-- controllers/
+|   |-- middleware/
+|   |-- models/
+|   |-- routes/
+|   |-- validation/
+|   |-- server.js
+|   `-- seed.js
+`-- frontend/
+    |-- public/
+    `-- src/
 ```
 
-## Setup & Run
+## Environment Setup
 
-### Prerequisites
-- Node.js v16+
-- MongoDB running locally (or MongoDB Atlas URI)
+### Backend
 
-### 1. Backend Setup
+1. Copy `backend/.env.example` to `backend/.env`
+2. Update values:
+
+```env
+PORT=5000
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_DB=salon_management
+MYSQL_USER=root
+MYSQL_PASSWORD=change_me
+JWT_SECRET=change_me
+FRONTEND_URL=http://localhost:3000
+NODE_ENV=development
+DB_LOG=false
+DB_TZ=+05:30
+```
+
+### Frontend
+
+1. Copy `frontend/.env.example` to `frontend/.env`
+2. Update values:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_SOCKET_URL=http://localhost:5000
+```
+
+Notes:
+- `REACT_APP_API_URL` is used for Axios base URL.
+- `REACT_APP_SOCKET_URL` is used for Socket.IO connection.
+- In CRA, frontend env variables must start with `REACT_APP_`.
+
+## Local Run
+
+### Backend
 
 ```bash
 cd backend
 npm install
+npm run dev
 ```
 
-Edit `.env` if needed (default: localhost MongoDB):
-```
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/salon_management
-JWT_SECRET=salon_secret_key_2024
-```
-
-Seed demo data:
-```bash
-node seed.js
-```
-
-Start server:
-```bash
-npm run dev     # development (nodemon)
-npm start       # production
-```
-
-### 2. Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
@@ -69,34 +76,25 @@ npm install
 npm start
 ```
 
-App opens at: **http://localhost:3000**
+## Deployment Checklist
 
-### Demo Login
-- **Email:** admin@salon.com
-- **Password:** admin123
+1. Move secrets out of source code and set them in your hosting platform env settings.
+2. Create a production MySQL database and update `MYSQL_*` vars.
+3. Set a strong `JWT_SECRET`.
+4. Set `FRONTEND_URL` to deployed frontend domain for Socket.IO CORS.
+5. Set frontend env:
+   - `REACT_APP_API_URL=https://<your-backend-domain>`
+   - `REACT_APP_SOCKET_URL=https://<your-backend-domain>`
+6. Build frontend:
 
-## API Endpoints
+```bash
+cd frontend
+npm run build
+```
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/login | Login |
-| POST | /api/auth/register | Register |
-| GET/POST | /api/customers | List / Add customers |
-| GET/PUT/DELETE | /api/customers/:id | Get / Update / Delete |
-| GET/POST | /api/services | List / Add services |
-| GET/PUT/DELETE | /api/services/:id | Get / Update / Deactivate |
-| GET/POST | /api/staff | List / Add staff |
-| GET/PUT/DELETE | /api/staff/:id | Get / Update / Deactivate |
-| GET/POST | /api/appointments | List / Book appointments |
-| GET/PUT/DELETE | /api/appointments/:id | Get / Update / Cancel |
-| GET | /api/dashboard/stats | Dashboard statistics |
-
-## Tech Stack
-
-- **Frontend:** React 18, React Router v6, Axios, React Toastify
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB, Mongoose
-- **Auth:** JWT + bcryptjs
-=======
-# salon-management
->>>>>>> 2706db2c7a3525a5847fbe3cde73f0e773daa41c
+7. Deploy backend and frontend (or serve frontend build via reverse proxy).
+8. Verify:
+   - API routes respond
+   - Login works
+   - Dashboard data loads
+   - Real-time notifications connect
