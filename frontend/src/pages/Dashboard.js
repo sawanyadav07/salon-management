@@ -57,7 +57,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="dashboard-panels">
 
         {/* Recent Appointments */}
         <div className="card">

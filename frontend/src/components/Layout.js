@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 
@@ -15,7 +15,19 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAllRead } = useNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
   const [openNotif, setOpenNotif] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+    setOpenNotif(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle('mobile-nav-open', sidebarOpen);
+    return () => document.body.classList.remove('mobile-nav-open');
+  }, [sidebarOpen]);
 
   const handleLogout = () => {
     logout();
@@ -31,15 +43,33 @@ export default function Layout() {
   };
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
+    <div className={`layout${sidebarOpen ? ' sidebar-open' : ''}`}>
+      {sidebarOpen && (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          aria-label="Close menu"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-logo">SalonPro</div>
+        <button
+          type="button"
+          className="sidebar-close-btn"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close menu"
+        >
+          Close
+        </button>
         <nav className="sidebar-nav">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.path === '/admin'}
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             >
               {item.label}
@@ -57,7 +87,17 @@ export default function Layout() {
       </aside>
       <main className="main-content">
         <div className="topbar">
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
+          <button
+            type="button"
+            className="icon-btn mobile-menu-btn"
+            onClick={() => setSidebarOpen((open) => !open)}
+            aria-label="Open menu"
+            aria-expanded={sidebarOpen}
+          >
+            Menu
+          </button>
+
+          <div className="topbar-actions">
             <button className="icon-btn" onClick={toggleNotif} aria-label="Notifications">
               <span style={{ fontSize: '20px' }}>{String.fromCodePoint(128276)}</span>
               {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
