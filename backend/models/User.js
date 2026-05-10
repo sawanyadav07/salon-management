@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
+  User.addHook('beforeValidate', (user) => {
+    if (user.email) {
+      user.email = String(user.email).trim().toLowerCase();
+    }
+  });
+
   User.addHook('beforeCreate', async (user) => {
     if (user.password) {
       user.password = await bcrypt.hash(user.password, 10);
