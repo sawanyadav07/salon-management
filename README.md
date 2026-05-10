@@ -81,19 +81,61 @@ npm start
 1. Move secrets out of source code and set them in your hosting platform env settings.
 2. Create a production MySQL database and update `MYSQL_*` vars.
 3. Set a strong `JWT_SECRET`.
-4. Set `FRONTEND_URL` to deployed frontend domain for Socket.IO CORS.
+4. Set `FRONTEND_URL` (or `FRONTEND_URLS` as comma-separated domains) to deployed frontend domain(s) for API + Socket.IO CORS.
 5. Set frontend env:
    - `REACT_APP_API_URL=https://<your-backend-domain>`
    - `REACT_APP_SOCKET_URL=https://<your-backend-domain>`
-6. Build frontend:
+6. If admin login is missing in production DB, create/update admin:
+
+```bash
+cd backend
+npm run create-admin -- admin@salon.com StrongPassword123 "Salon Admin"
+```
+
+7. If staff table is empty in production DB, add default staff:
+
+```bash
+cd backend
+npm run create-staff
+```
+
+Optional single staff create:
+
+```bash
+cd backend
+npm run create-staff -- "Aman Singh" "9876500000" "Hair Stylist" "aman@salon.com"
+```
+
+8. If services table is empty in production DB, add default services:
+
+```bash
+cd backend
+npm run create-services
+```
+
+Optional single service create/update:
+
+```bash
+cd backend
+npm run create-services -- "Cleanup Facial" "skin" 899 60 "Deep skin cleanup"
+```
+
+9. One-command safe production seed (admin + staff + services, no table drop):
+
+```bash
+cd backend
+npm run seed-production
+```
+
+10. Build frontend:
 
 ```bash
 cd frontend
 npm run build
 ```
 
-7. Deploy backend and frontend (or serve frontend build via reverse proxy).
-8. Verify:
+11. Deploy backend and frontend (or serve frontend build via reverse proxy).
+12. Verify:
    - API routes respond
    - Login works
    - Dashboard data loads

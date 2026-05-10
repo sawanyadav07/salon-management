@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "create-admin": "node scripts/createAdmin.js",
+    "create-staff": "node scripts/createStaff.js",
+    "create-services": "node scripts/createServices.js",
+    "seed-production": "node scripts/seedProduction.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
