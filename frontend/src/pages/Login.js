@@ -37,7 +37,7 @@ export default function Login() {
             <input
               type="email"
               required
-              placeholder="admin@salon.com"
+              placeholder="Enter email"
               value={form.email}
               onChange={(event) => setForm({ ...form, email: event.target.value })}
             />

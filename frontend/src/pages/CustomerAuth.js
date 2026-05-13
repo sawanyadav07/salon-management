@@ -82,7 +82,7 @@ export default function CustomerAuth() {
               <input
                 type="email"
                 required
-                placeholder="you@example.com"
+                placeholder="Enter email"
                 value={loginForm.email}
                 onChange={(event) => setLoginForm({ ...loginForm, email: event.target.value })}
               />
@@ -120,7 +120,7 @@ export default function CustomerAuth() {
                 maxLength={10}
                 pattern="[0-9]{10}"
                 title="Phone number must be 10 digits"
-                placeholder="9876543210"
+                placeholder="Enter mobile number"
                 value={signupForm.phone}
                 onChange={(event) => setSignupForm({ ...signupForm, phone: normalizePhone(event.target.value) })}
               />
@@ -130,7 +130,7 @@ export default function CustomerAuth() {
               <input
                 type="email"
                 required
-                placeholder="you@example.com"
+                placeholder="Enter email"
                 value={signupForm.email}
                 onChange={(event) => setSignupForm({ ...signupForm, email: event.target.value })}
               />

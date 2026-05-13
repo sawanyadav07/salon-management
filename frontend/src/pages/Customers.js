@@ -115,12 +115,12 @@ export default function Customers() {
                     title="Phone number must be 10 digits"
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: normalizePhone(e.target.value) })}
-                    placeholder="9876543210"
+                    placeholder="Enter mobile number"
                   />
                 </div>
                 <div className="form-group">
                   <label>Email</label>
-                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="priya@email.com" />
+                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="Enter email" />
                 </div>
                 <div className="form-group">
                   <label>Gender</label>
