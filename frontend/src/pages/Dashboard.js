@@ -4,8 +4,11 @@ import { toast } from 'react-toastify';
 
 const statusBadge = (status) => {
   const map = {
-    scheduled: 'badge-scheduled', confirmed: 'badge-confirmed',
-    'in-progress': 'badge-inprogress', completed: 'badge-completed', cancelled: 'badge-cancelled'
+    scheduled: 'badge-scheduled',
+    confirmed: 'badge-confirmed',
+    'in-progress': 'badge-inprogress',
+    completed: 'badge-completed',
+    cancelled: 'badge-cancelled'
   };
   return <span className={`badge ${map[status] || ''}`}>{status}</span>;
 };
@@ -14,14 +17,18 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const formatCurrency = (value) => `INR ${Number(value || 0).toLocaleString('en-IN')}`;
+
   useEffect(() => {
     axios.get('/api/dashboard/stats')
-      .then(res => setStats(res.data))
+      .then((res) => setStats(res.data))
       .catch(() => toast.error('Failed to load dashboard'))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: '#718096' }}>Loading dashboard...</div>;
+  if (loading) {
+    return <div style={{ padding: '40px', textAlign: 'center', color: '#718096' }}>Loading dashboard...</div>;
+  }
   if (!stats) return null;
 
   return (
@@ -29,16 +36,17 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Dashboard</h1>
-          <p className="page-subtitle">{new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p className="page-subtitle">
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
         </div>
       </div>
 
-      {/* Stat Cards */}
       <div className="stat-cards">
         <div className="stat-card gold">
           <div className="label">Today's Revenue</div>
-          <div className="value">₹{stats.revenueToday.toLocaleString('en-IN')}</div>
-          <div className="sub">Month: ₹{stats.revenueMonth.toLocaleString('en-IN')}</div>
+          <div className="value">{formatCurrency(stats.revenueToday)}</div>
+          <div className="sub">Month: {formatCurrency(stats.revenueMonth)}</div>
         </div>
         <div className="stat-card blue">
           <div className="label">Today's Appointments</div>
@@ -58,49 +66,41 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-panels">
-
-        {/* Recent Appointments */}
-        <div className="card">
-          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#1a202c' }}>
-            Recent Appointments
-          </h3>
-          {stats.recentAppointments.length === 0
-            ? <p style={{ color: '#a0aec0', fontSize: '14px' }}>No appointments yet</p>
-            : stats.recentAppointments.map(appt => (
-              <div key={appt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
+        <div className="card dashboard-panel-card">
+          <h3 className="dashboard-panel-title">Recent Appointments</h3>
+          {stats.recentAppointments.length === 0 ? (
+            <p className="dashboard-panel-empty">No appointments yet</p>
+          ) : (
+            stats.recentAppointments.map((appt) => (
+              <div key={appt.id} className="dashboard-item-row">
                 <div>
-                  <div style={{ fontWeight: '500', fontSize: '14px' }}>{appt.customer?.name}</div>
-                  <div style={{ fontSize: '12px', color: '#718096' }}>
-                    {appt.staff?.name} · {appt.timeSlot} · {new Date(appt.date).toLocaleDateString('en-IN')}
+                  <div className="dashboard-item-primary">{appt.customer?.name}</div>
+                  <div className="dashboard-item-secondary">
+                    {appt.staff?.name} | {appt.timeSlot} | {new Date(appt.date).toLocaleDateString('en-IN')}
                   </div>
                 </div>
                 {statusBadge(appt.status)}
               </div>
             ))
-          }
+          )}
         </div>
 
-        {/* Top Services */}
-        <div className="card">
-          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', color: '#1a202c' }}>
-            Top Services This Month
-          </h3>
-          {stats.topServices.length === 0
-            ? <p style={{ color: '#a0aec0', fontSize: '14px' }}>No data yet</p>
-            : stats.topServices.map((svc, i) => (
-              <div key={svc.id || i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid #f0f0f0' }}>
-                <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#e2b96f', color: '#1a202c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>
-                  {i + 1}
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '500', fontSize: '14px' }}>{svc.name}</div>
-                  <div style={{ fontSize: '12px', color: '#718096' }}>{svc.count} bookings</div>
+        <div className="card dashboard-panel-card">
+          <h3 className="dashboard-panel-title">Top Services This Month</h3>
+          {stats.topServices.length === 0 ? (
+            <p className="dashboard-panel-empty">No data yet</p>
+          ) : (
+            stats.topServices.map((svc, index) => (
+              <div key={svc.id || index} className="dashboard-item-row dashboard-item-rank-row">
+                <span className="dashboard-rank-dot">{index + 1}</span>
+                <div className="dashboard-rank-content">
+                  <div className="dashboard-item-primary">{svc.name}</div>
+                  <div className="dashboard-item-secondary">{svc.count} bookings</div>
                 </div>
               </div>
             ))
-          }
+          )}
         </div>
-
       </div>
     </div>
   );
