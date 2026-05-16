@@ -19,7 +19,7 @@ const server = http.createServer(app);
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://salon-management-beta-steel.vercel.app"
+    "https://mysalonpro.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
