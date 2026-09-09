@@ -8,6 +8,58 @@ const starterQuestions = [
   'Staff scheduling ke best practices batao'
 ];
 
+const toTableCells = (line) => line.trim().replace(/^\||\|$/g, '').split('|').map((cell) => cell.trim());
+const isTableDivider = (line) => toTableCells(line).every((cell) => /^:?-{3,}:?$/.test(cell));
+const cleanText = (text) => text.replace(/\*\*(.*?)\*\*/g, '$1');
+
+function CellText({ value }) {
+  const parts = cleanText(value).split(/<br\s*\/?\s*>/i);
+  return parts.map((part, index) => (
+    <React.Fragment key={`${part}-${index}`}>
+      {index > 0 && <br />}
+      {part}
+    </React.Fragment>
+  ));
+}
+
+function MessageContent({ content }) {
+  const lines = content.split('\n');
+  const blocks = [];
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    if (line.includes('|') && index + 1 < lines.length && isTableDivider(lines[index + 1])) {
+      const headers = toTableCells(line);
+      const rows = [];
+      index += 2;
+      while (index < lines.length && lines[index].includes('|')) {
+        rows.push(toTableCells(lines[index]));
+        index += 1;
+      }
+      blocks.push(
+        <div className="assistant-table-wrap" key={`table-${index}`}>
+          <table className="assistant-answer-table">
+            <thead><tr>{headers.map((header, cellIndex) => <th key={`${header}-${cellIndex}`}><CellText value={header} /></th>)}</tr></thead>
+            <tbody>{rows.map((row, rowIndex) => <tr key={`row-${rowIndex}`}>{headers.map((_, cellIndex) => <td key={`cell-${rowIndex}-${cellIndex}`}><CellText value={row[cellIndex] || ''} /></td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    if (line.trim()) {
+      const heading = line.match(/^#{1,3}\s+(.+)$/) || line.match(/^\*\*(.+)\*\*$/);
+      blocks.push(heading
+        ? <h3 className="assistant-answer-heading" key={`heading-${index}`}>{cleanText(heading[1])}</h3>
+        : <p key={`text-${index}`}>{cleanText(line)}</p>);
+    }
+    index += 1;
+  }
+
+  return blocks;
+}
+
 export default function AdminAssistant() {
   const [messages, setMessages] = useState([
     {
@@ -82,7 +134,7 @@ export default function AdminAssistant() {
           {messages.map((item, index) => (
             <div key={`${item.role}-${index}`} className={`assistant-message ${item.role}${item.isError ? ' error' : ''}`}>
               <span className="assistant-message-label">{item.role === 'user' ? 'You' : 'SalonPro AI'}</span>
-              <p>{item.content}</p>
+              <div className="assistant-answer-content"><MessageContent content={item.content} /></div>
             </div>
           ))}
           {loading && (
