@@ -8,7 +8,8 @@ const navItems = [
   { path: '/admin/appointments', label: 'Appointments' },
   { path: '/admin/customers', label: 'Customers' },
   { path: '/admin/services', label: 'Services' },
-  { path: '/admin/staff', label: 'Staff' }
+  { path: '/admin/staff', label: 'Staff' },
+  { path: '/admin/assistant', label: 'AI Assistant', ai: true }
 ];
 
 export default function Layout() {
@@ -88,6 +89,7 @@ export default function Layout() {
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             >
+              {item.ai && <span className="nav-ai-logo" aria-hidden="true">AI</span>}
               {item.label}
             </NavLink>
           ))}

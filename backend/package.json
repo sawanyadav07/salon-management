@@ -19,6 +19,7 @@
     "joi": "^18.1.2",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.9.7",
+    "openai": "^7.9.0",
     "sequelize": "^6.37.3",
     "socket.io": "^4.7.5"
   },
