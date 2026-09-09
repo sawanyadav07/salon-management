@@ -651,6 +651,64 @@ textarea { resize: vertical; min-height: 80px; }
 .customer-booking-form {
   margin-top: 6px;
 }
+.voice-booking-panel {
+  margin: 4px 0 18px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+}
+.voice-booking-panel.active {
+  border-color: #818cf8;
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.12);
+}
+.voice-booking-icon {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  font-size: 23px;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.24);
+}
+.voice-booking-content { min-width: 0; }
+.voice-booking-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.voice-booking-kicker { display: block; margin-bottom: 3px; color: #4f46e5; font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.voice-booking-heading h3 { color: #172554; font-size: 16px; line-height: 1.25; }
+.voice-booking-status { margin-top: 6px; color: #334155; font-size: 13px; line-height: 1.45; }
+.voice-transcript { margin-top: 7px; color: #1e3a8a; font-size: 12px; line-height: 1.45; }
+.voice-booking-example { margin-top: 7px; color: #475569; font-size: 12px; line-height: 1.45; }
+.voice-booking-privacy { margin-top: 7px; color: #64748b; font-size: 11px; line-height: 1.4; }
+.voice-live-badge { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 5px; color: #be123c; font-size: 11px; font-weight: 700; }
+.voice-live-badge i { width: 7px; height: 7px; border-radius: 50%; background: #f43f5e; animation: voiceLivePulse 1.2s infinite; }
+.voice-booking-btn {
+  min-width: 146px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: #312e81;
+  color: #ffffff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 7px 15px rgba(49, 46, 129, 0.2);
+}
+.voice-booking-btn:hover:not(:disabled) { background: #4338ca; }
+.voice-booking-btn.listening { background: #be123c; }
+.voice-booking-btn:disabled { cursor: not-allowed; opacity: .55; }
+@keyframes voiceLivePulse { 50% { opacity: .35; transform: scale(.8); } }
 .customer-booking-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
@@ -1205,6 +1263,14 @@ textarea { resize: vertical; min-height: 80px; }
   }
   .customer-booking-layout {
     grid-template-columns: 1fr;
+  }
+  .voice-booking-panel {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+  .voice-booking-btn {
+    grid-column: 1 / -1;
+    width: 100%;
   }
   .customer-booking-summary {
     position: static;
