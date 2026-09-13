@@ -34,7 +34,7 @@ exports.askAssistant = async (req, res, next) => {
       ? history
         .filter(isValidChatItem)
         .slice(-MAX_HISTORY_ITEMS)
-        .map((item) => ({ role: item.role, content: item.content.slice(0, MAX_MESSAGE_LENGTH) }))
+        .map((item) => ({ role: item.role, content: item.content.slice(0, MAX_MESSAGE_LENGTH) })) 
       : [];
 
     // Groq provides an OpenAI-compatible Responses API, so this SDK remains valid.
