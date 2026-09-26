@@ -8,5 +8,6 @@ router.use('/services', require('./services'));
 router.use('/staff', require('./staff'));
 router.use('/appointments', require('./appointments'));
 router.use('/dashboard', require('./dashboard'));
+router.use('/admin-assistant', require('./adminAssistant'));
 
 module.exports = router;

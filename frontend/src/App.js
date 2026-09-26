@@ -14,6 +14,7 @@ import Appointments from './pages/Appointments';
 import Customers from './pages/Customers';
 import Services from './pages/Services';
 import Staff from './pages/Staff';
+import AdminAssistant from './pages/AdminAssistant';
 import './App.css';
 
 const Loader = () => <div className="loader">Loading...</div>;
@@ -74,6 +75,7 @@ function App() {
               <Route path="customers" element={<Customers />} />
               <Route path="services" element={<Services />} />
               <Route path="staff" element={<Staff />} />
+              <Route path="assistant" element={<AdminAssistant />} />
             </Route>
 
             <Route path="/customer" element={
