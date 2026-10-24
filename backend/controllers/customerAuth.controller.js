@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { sequelize, Customer, CustomerAccount } = require('../models');
 const { ApiError } = require('../errors/apiError');
+const { isLocked, recordFailedLogin, clearFailedLogins, MAX_FAILED_ATTEMPTS, getLockoutMinutes } = require('../utils/loginSecurity');
 
 const normalizeEmail = (email = '') => email.trim().toLowerCase();
 
@@ -101,17 +102,29 @@ exports.login = async (req, res, next) => {
     const normalizedEmail = normalizeEmail(req.body.email);
     const account = await CustomerAccount.findOne({
       where: { email: normalizedEmail },
-      include: [{ model: Customer, as: 'customer' }]
+      attributes: ['id', 'customerId', 'email', 'password', 'failedLoginAttempts', 'lockedUntil'],
+      include: [{ model: Customer, as: 'customer', attributes: ['id', 'name', 'phone', 'email'] }]
     });
 
     if (!account || !account.customer) {
       return next(ApiError.unauthorized('Invalid credentials'));
     }
 
+    if (isLocked(account)) {
+      await account.save({ fields: ['failedLoginAttempts', 'lockedUntil'] });
+      return next(ApiError.forbidden(`Account locked. Try again after ${getLockoutMinutes()} min.`));
+    }
+
     const isMatch = await account.matchPassword(req.body.password);
     if (!isMatch) {
+      const lockedUntil = await recordFailedLogin(account);
+      if (lockedUntil) {
+        return next(ApiError.forbidden(`Account locked after ${MAX_FAILED_ATTEMPTS} failed login attempts. Try again after ${getLockoutMinutes()} min.`));
+      }
       return next(ApiError.unauthorized('Invalid credentials'));
     }
+
+    await clearFailedLogins(account);
 
     const token = signToken(account.customer);
     return res.json({

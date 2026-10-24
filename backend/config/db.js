@@ -21,7 +21,8 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log('✅ MySQL connection established');
-    await sequelize.sync();
+    // Keep existing installations in step with model changes (such as login lockout fields).
+    await sequelize.sync({ alter: true });
     console.log('✅ Sequelize models synced');
   } catch (err) {
     console.error('❌ MySQL connection error:', err.message);

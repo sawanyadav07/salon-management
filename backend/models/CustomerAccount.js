@@ -5,7 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     customerId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
     email: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { isEmail: true } },
-    password: { type: DataTypes.STRING, allowNull: false }
+    password: { type: DataTypes.STRING, allowNull: false },
+    failedLoginAttempts: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    lockedUntil: { type: DataTypes.DATE, allowNull: true }
   }, {
     tableName: 'customer_accounts',
     timestamps: true
