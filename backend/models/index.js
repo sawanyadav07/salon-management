@@ -8,6 +8,7 @@ const Service = require('./Service')(sequelize, DataTypes);
 const Staff = require('./Staff')(sequelize, DataTypes);
 const Appointment = require('./Appointment')(sequelize, DataTypes);
 const AppointmentService = require('./AppointmentService')(sequelize, DataTypes);
+const InventoryItem = require('./InventoryItem')(sequelize, DataTypes);
 
 // Associations
 Customer.hasMany(Appointment, { foreignKey: 'customerId', as: 'appointments', onDelete: 'CASCADE' });
@@ -45,5 +46,6 @@ module.exports = {
   Service,
   Staff,
   Appointment,
-  AppointmentService
+  AppointmentService,
+  InventoryItem
 };

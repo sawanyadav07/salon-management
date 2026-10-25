@@ -9,6 +9,7 @@ const navItems = [
   { path: '/admin/customers', label: 'Customers' },
   { path: '/admin/services', label: 'Services' },
   { path: '/admin/staff', label: 'Staff' },
+  { path: '/admin/inventory', label: 'Inventory' },
   { path: '/admin/assistant', label: 'AI Assistant', ai: true }
 ];
 

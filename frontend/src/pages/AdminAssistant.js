@@ -3,6 +3,8 @@ import axios from '../config/api';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 const starterQuestions = [
+  'Which inventory items are low or out of stock?',
+  'Give me a quick summary of my current inventory',
   'Salon ke daily operations ko better kaise manage karun?',
   'Customer follow-up ka workflow suggest karo',
   'Staff scheduling ke best practices batao'
@@ -64,12 +66,28 @@ export default function AdminAssistant() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Namaste! Main aapka SalonPro AI Assistant hoon. Aap salon operations aur management ke baare me custom questions pooch sakte hain.'
+      content: 'Namaste! Main aapka SalonPro AI Assistant hoon. I can answer questions using your live inventory, flag low-stock items, and provide salon-management guidance.'
     }
   ]);
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
+  const [assistantOnline, setAssistantOnline] = useState(false);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    const checkStatus = async () => {
+      try {
+        const { data } = await axios.get('/api/admin-assistant/status', { timeout: 10000 });
+        if (active) setAssistantOnline(Boolean(data.online));
+      } catch (_error) {
+        if (active) setAssistantOnline(false);
+      }
+    };
+    checkStatus();
+    const timer = window.setInterval(checkStatus, 30000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -89,8 +107,10 @@ export default function AdminAssistant() {
         message: text,
         history: previousMessages
       });
+      setAssistantOnline(true);
       setMessages((current) => [...current, { role: 'assistant', content: data.answer }]);
     } catch (error) {
+      setAssistantOnline(false);
       setMessages((current) => [
         ...current,
         { role: 'assistant', content: `Sorry, ${getApiErrorMessage(error)}`, isError: true }
@@ -113,17 +133,17 @@ export default function AdminAssistant() {
           <div>
             <p className="assistant-eyebrow">Admin workspace</p>
             <h1>SalonPro AI Assistant</h1>
-            <p>Get quick, practical guidance for management and operations.</p>
+            <p>Get live inventory insights and practical guidance for salon operations.</p>
           </div>
         </div>
-        <span className="assistant-status"><span /> Online</span>
+        <span className={`assistant-status ${assistantOnline ? 'is-online' : 'is-offline'}`} aria-live="polite"><span /> {assistantOnline ? 'Online' : 'Offline'}</span>
       </header>
 
       <div className="assistant-chat-card">
         <div className="assistant-chat-header">
           <div>
             <strong>New conversation</strong>
-            <span>General, read-only assistant</span>
+            <span>Live inventory insights · Read-only assistant</span>
           </div>
           <button type="button" className="assistant-clear-btn" onClick={() => setMessages(messages.slice(0, 1))} disabled={loading || messages.length === 1}>
             Clear chat
