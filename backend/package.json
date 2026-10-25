@@ -9,7 +9,8 @@
     "create-admin": "node scripts/createAdmin.js",
     "create-staff": "node scripts/createStaff.js",
     "create-services": "node scripts/createServices.js",
-    "seed-production": "node scripts/seedProduction.js"
+    "seed-production": "node scripts/seedProduction.js",
+    "migrate:inventory": "node migrations/20261025-create-inventory-items.js up"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

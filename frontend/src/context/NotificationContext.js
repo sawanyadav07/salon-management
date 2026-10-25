@@ -3,10 +3,17 @@ import { io } from 'socket.io-client';
 import { toast } from 'react-toastify';
 import { socketURL } from '../config/api';
 
+const LOW_STOCK_VOICE_KEY = 'salonpro-low-stock-voice-enabled';
+
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
+  const [lowStockVoiceEnabled, setLowStockVoiceEnabled] = useState(() => localStorage.getItem(LOW_STOCK_VOICE_KEY) !== 'false');
+
+  useEffect(() => {
+    localStorage.setItem(LOW_STOCK_VOICE_KEY, String(lowStockVoiceEnabled));
+  }, [lowStockVoiceEnabled]);
 
   useEffect(() => {
     const socket = io(socketURL, {
@@ -27,6 +34,14 @@ export const NotificationProvider = ({ children }) => {
 
       setNotifications((prev) => [item, ...prev].slice(0, 30));
       toast.info(payload.title || 'New notification');
+
+      if (payload.type === 'inventory-low-stock' && lowStockVoiceEnabled && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(payload.message || payload.title || 'Inventory stock is low.');
+        utterance.lang = 'en-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
 
       // Notification sound (same behavior as before)
       try {
@@ -49,7 +64,7 @@ export const NotificationProvider = ({ children }) => {
     });
 
     return () => socket.disconnect();
-  }, []);
+  }, [lowStockVoiceEnabled]);
 
   const unreadCount = useMemo(
     () => notifications.filter((item) => !item.read).length,
@@ -60,7 +75,7 @@ export const NotificationProvider = ({ children }) => {
     setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
 
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, markAllRead }}>
+    <NotificationContext.Provider value={{ notifications, unreadCount, markAllRead, lowStockVoiceEnabled, setLowStockVoiceEnabled }}>
       {children}
     </NotificationContext.Provider>
   );
